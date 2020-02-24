@@ -14,6 +14,7 @@ class lyrics():
         self.lUrl = config.get(settings, 'lUrl')
         self.jsonFormat = config.get(settings, 'json')
         self.workType = config.get(settings, 'workType')
+        self.limit = config.get(settings, 'limit')
 
         self.searchTerm = raw_input("Please enter the artists name: ")
         
@@ -22,29 +23,28 @@ class lyrics():
 
         self.i = 1
 
-    def findAverages(self):
-        # Find artist ID using 
+    def findArtistData(self):
         artistResponse = requests.get(self.idUrl).json()
         artistId = artistResponse['artists'][0]['id']
 
         # Obtain song titles using the artist id
-        songResponse = requests.get(self.mBUrl + 'work?artist=' + artistId + self.workType + self.jsonFormat + '&limit=50')
+        songResponse = requests.get(self.mBUrl + 'work?artist=' + artistId + self.workType + self.jsonFormat + self.limit)
         songData = songResponse.json()
 
         for song in songData['works']:
             self.songList.append(song['title'])
 
-        # Using song titles list, obtain song lyrics
+    def findLyrics(self):        
         for song in self.songList:
             searchLyric = self.lUrl + self.searchTerm + '/' + song
             self.lyricList.append(requests.get(searchLyric).json())
             print('Total songs searched: ' + str(self.i))
             self.i += 1
-
-        # Pass lyrics to a panda dataframe
+    
+    def calcAverages(self):
         df = pd.DataFrame(self.lyricList)
 
-        # Add additional 
+        # Add additional column to calculate 
         df['Lyrics length'] = df['lyrics'].map(str).apply(len)
         summedValues = df.median()
 
@@ -55,15 +55,18 @@ class lyrics():
         removeZeros = df[df['Lyrics length']==0].index
         df.drop(removeZeros , inplace=True)
     
-
-        # Using a for loop allows median to be printed without
-        # numpy info
+        # For loop prevents numpy info being included
         for val in summedValues:
             print("\nThe average number of lyrics for " + self.searchTerm + " is: " + str(val) + '\n')
 
+    def findAverages(self):
+        self.findArtistData()
+        self.findLyrics()
+        self.calcAverages()
 
-run = lyrics()
-run.findAverages()
+def main():
+    run = lyrics()
+    run.findAverages()
 
 
-
+main()
