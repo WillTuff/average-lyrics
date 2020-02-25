@@ -1,15 +1,16 @@
 import requests
 import json
 import unicodedata
-import ConfigParser
+import configparser
 import pandas as pd
+from pip._vendor.distlib.compat import raw_input
 
 
 class lyrics():
     def __init__(self):
         self.searchTerm = raw_input("Please enter the artists name: ")
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read("settings.ini")
         settings = "info"
 
