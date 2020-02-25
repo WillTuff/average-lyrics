@@ -4,8 +4,11 @@ import unicodedata
 import ConfigParser
 import pandas as pd
 
+
 class lyrics():
     def __init__(self):
+        self.searchTerm = raw_input("Please enter the artists name: ")
+
         config = ConfigParser.ConfigParser()
         config.read("settings.ini")
         settings = "info"
@@ -15,8 +18,6 @@ class lyrics():
         self.jsonFormat = config.get(settings, 'json')
         self.workType = config.get(settings, 'workType')
         self.limit = config.get(settings, 'limit')
-
-        self.searchTerm = raw_input("Please enter the artists name: ")
         
         self.songList, self.lyricList = [], []
         self.idUrl = self.mBUrl + 'artist?query=' + self.searchTerm + self.jsonFormat
@@ -34,7 +35,7 @@ class lyrics():
         for song in songData['works']:
             self.songList.append(song['title'])
 
-    def findLyrics(self):        
+    def findLyrics(self):
         for song in self.songList:
             searchLyric = self.lUrl + self.searchTerm + '/' + song
             self.lyricList.append(requests.get(searchLyric).json())
@@ -66,7 +67,7 @@ class lyrics():
 
 def main():
     run = lyrics()
-    run.findAverages()
+    return run.findAverages()
 
 
 main()
