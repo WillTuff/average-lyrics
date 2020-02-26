@@ -39,6 +39,7 @@ class lyrics():
     def findLyrics(self):
         for song in self.songList:
             searchLyric = self.lUrl + self.searchTerm + '/' + song
+            searchLyric.encode('utf-8')
             self.lyricList.append(requests.get(searchLyric).json())
             print('Total songs searched: ' + str(self.i))
             self.i += 1
@@ -47,7 +48,7 @@ class lyrics():
         df = pd.DataFrame(self.lyricList)
 
         # Add additional column to calculate 
-        df['Lyrics length'] = df['lyrics'].map(str).apply(len)
+        df['Lyrics length'] = df['lyrics'].apply(len)
         summedValues = df.median()
 
         # Remove errors (all errors have three characters) and zero values
@@ -62,9 +63,13 @@ class lyrics():
             print("\nThe average number of lyrics for " + self.searchTerm + " is: " + str(val) + '\n')
 
     def findAverages(self):
-        self.findArtistData()
-        self.findLyrics()
-        self.calcAverages()
+        try:
+            self.findArtistData()
+            self.findLyrics()
+            self.calcAverages()
+        except:
+            print("There was a problem running the program. Please try again\n",
+                    "If there's continued trouble please try a different artists")
 
 def main():
     run = lyrics()
