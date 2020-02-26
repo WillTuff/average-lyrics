@@ -1,6 +1,5 @@
 import requests
 import json
-import unicodedata
 import configparser
 import pandas as pd
 from pip._vendor.distlib.compat import raw_input
